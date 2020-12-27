@@ -27,4 +27,21 @@ a lambda expression with mulitple parameters `x` and `y` and a function `f`, in 
 lambda({x y} -> f(x y))
 ```
 #### Examples
+```
+> (lambda({x} -> x))(5)
+5
+> (lambda({x y} -> +(x y))(1 5)
+6
+```
+
+
+
+
+
+
+
+
+
+
+
 
