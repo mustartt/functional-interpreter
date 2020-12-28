@@ -5,7 +5,7 @@ Download the interpreter to play around with the language on Windows and Linux.
 
 ``` 
 > interp_win_v0_1.exe <filename.lang>
-$ interp_lin_v0_1.exe <filename.lang>
+$ interp_lin_v0_1 <filename.lang>
 ```
 
 ## Variables Declaration
