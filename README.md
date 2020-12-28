@@ -85,14 +85,21 @@ The language implements scope, which means that local definitions can share same
 #### Example
 ``` python
 bind add to lambda({x y u v} -> 
-	begin(
-		bind(sum1 to +(x y)) 
-		bind(sum2 to +(u v)) 
-			+(sum1 sum2)));
+    begin(
+        bind(sum1 to +(x y)) 
+	bind(sum2 to +(u v)) 
+		+(sum1 sum2)));
+
 
 > add(1 2 3 4)
 10
 ```
+## Lists
+TODO: Document syntax
+## Strings
+TODO: Document syntax
+## Structs
+TODO: To be implemented
 
 
 
