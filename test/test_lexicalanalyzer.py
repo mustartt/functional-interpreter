@@ -1,6 +1,8 @@
 import unittest
 
 from interpreter.LexicalAnalyzer import tokenize
+from interpreter.LexicalAnalyzer import atomize
+
 
 class TestLexicalAnalyzer(unittest.TestCase):
 
@@ -47,4 +49,44 @@ class TestLexicalAnalyzer(unittest.TestCase):
 
     #TODO: Implement the String testing Suite
     #TODO: Implement the Struct testing Suite
+
+    # atomize unittest
+    def test_atomize(self):
+        # value testing
+        self.assertEqual(atomize('0'), 0)
+        self.assertEqual(atomize('123'), 123)
+        self.assertEqual(atomize('-123'), -123)
+        self.assertEqual(atomize('1.23'), 1.23)
+        self.assertEqual(atomize('-1.23'), -1.23)
+        self.assertEqual(atomize('abc'), 'abc')
+        
+        
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
         

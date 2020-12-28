@@ -13,8 +13,11 @@ This module can be imported as a module and contains the following function:
     * atomize     : parses tokens to the appropriate datatype
 """
 
+
 import re
+
 from typing import List, Any
+
 
 
 def tokenize(program: str) -> List[str]:
@@ -44,6 +47,40 @@ def tokenize(program: str) -> List[str]:
     # tokenize program
     return program.split()
     
+
+
+def atomize(token: str) -> Any:
+    """ Parse string token to respective Python Datatype
+
+     * If the string token is a int, parse it to an integer
+     * If the string token is a float, parse it to a float
+     * TODO: Implement Parsing for structs
+     * Else keep the token as a string
+
+     Requires: token is not empty
+
+     :param token: a string token to be parsed
+     :type  token: str
+
+     :returns: the parsed Python Datatype
+     :rtype: int, float, and str
+    """
+
+    try:
+        # check if token is integer
+        return int(token)
+    except:
+        try:
+            # check if token is float
+            return float(token)
+        except:
+            try:
+                # TODO: checks for struct
+                return str(token)
+            except:
+                # Somehow unable to parse the datatype
+                raise ValueError('Unable to parse datatype.')
+        
 
 
 def abstract_syntax_tree(tokens: List[str]) -> List[Any]:
