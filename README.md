@@ -109,7 +109,42 @@ TODO: Document syntax
 ## Structs
 TODO: To be implemented
 
+## Standard Library
+The standard library is included under `lang` which include files with basic useful functions
+#### higher-order.lang
+Provides the basic higher order function `map`, `filter`, and `reduce`.
+``` python
+$ cat ./lang/higher-order.lang
+# map(f lst) maps the function f to every element of lst
+# map: (X -> Y) (listof X) -> (listof Y)
+bind map to lambda({f lst} ->
+        if(empty?(lst)
+                list()
+                cons(f(car(lst))
+                        map(f cdr(lst)))));
+...
+```
 
+#### collections.lang
+Provides some list functions such as `quicksort`, `length`, and `list-ref`.
+``` python
+$ cat ./lang/collections.lang
+# quicksort(pred lst) performs quicksort on lst with pred
+# quicksort: (X X -> Bool) (listof X) -> (listof X)
+bind quicksort to lambda({pred lst} ->
+        if(empty?(lst)
+                list()
+                local(
+                        bind(pivot to car(lst))
+                        bind(less  to filter(lambda({x} -> pred(x pivot)) cdr(lst)))
+                        bind(great to filter(lambda({x} -> not(pred(x pivot))) cdr(lst)))
+                                append(
+                                        append(
+                                                quicksort(pred less)
+                                                list(pivot))
+                                        quicksort(pred great)))));
+...
+```
 
 
 
