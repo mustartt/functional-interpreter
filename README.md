@@ -4,7 +4,7 @@ A Functional Programming Language Interpreter written in C. The fundamental idea
 ## Variables Declaration
 A basic variable declaration is as follows
 ```
-bind <identifier> (to, as, =, ->) <value>
+bind <identifier> (to|as|=|->) <value>
 ```
 the `bind` keyword binds the variable's `identifier` to the `value` using any of the keyword `to`, `as`, `=`, and `->`.
 #### Examples
@@ -40,7 +40,7 @@ In the language, `[]` and `{}` are interchangable for better readability in `λ`
 ## Function Declaration
 In the language, all functions are a `function_identifier` bound to a `λ` expression using the `bind` keyword as follows.
 ```
-bind <function_identifier> (as, to, =, ->) lambda({p_1 ... p_n} -> expression);
+bind <function_identifier> (as|to|=|->) lambda({p_1 ... p_n} -> expression);
 ```
 The `function_identifier` can contain all alphanumeric characters except keywords. All expressions should be postfixed by a `;` to indicate a seperate line.
 #### Examples
@@ -77,12 +77,22 @@ One can define local definitions and mulitple subsequent routine in functions us
 ``` python
 begin((def_1) ... (def_n) exp)
 ```
-Note: In the global scope, the keyword `bind` does not require `()` around it, but in local definitions, `()` are required around binding to ensure that they are seperate parameters.
+Note: In the global scope, the keyword `bind` does not require `()` around it, but in local definitions, `()` are required around binding to ensure that they are seperate parameters as `bind(<indentifier> (to|as|=|->) <expressioin>)`.
 
 ### Language Scope
 The language implements scope, which means that local definitions can share same names as definitions from outer scopes. 
-#### Example
 
+#### Example
+``` python
+bind add to lambda({x y u v} -> 
+	begin(
+		bind(sum1 to +(x y)) 
+		bind(sum2 to +(u v)) 
+			+(sum1 sum2)));
+
+> add(1 2 3 4)
+10
+```
 
 
 
