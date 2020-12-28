@@ -1,6 +1,12 @@
 # functional-interpreter
 A Functional Programming Language Interpreter written in C. The fundamental idea of this language is to express the functional nature of the language, as every function is a `λ` expression bound to an identifier. The language is non-typed and borrow many features of the Scheme Language, such as `list`, `cons`, `car`, `cdr`, and `struct`.
 
+Download the interpreter to play around with the language.
+
+``` 
+$ interp.exe <filename.lang>
+```
+
 ## Variables Declaration
 A basic variable declaration is as follows
 ```
@@ -87,7 +93,7 @@ The language implements scope, which means that local definitions can share same
 # add(x y u v) calculates the sum of the four num x y u v
 # add: Num Num Num Num -> Num
 bind add to lambda({x y u v} -> 
-    begin(
+    local(
         bind(sum1 to +(x y)) 
 	bind(sum2 to +(u v)) 
 		+(sum1 sum2)));
