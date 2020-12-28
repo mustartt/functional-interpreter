@@ -80,9 +80,9 @@ Use `and`, `or`, and `not` to combined logical result.
 
 ## Scope and Local Definition
 ### Local Definitions
-One can define local definitions and mulitple subsequent routine in functions using the keyword `local` or `begin`. The syntax is
+One can define local definitions and mulitple subsequent routine in functions using the keyword `local`. The syntax is
 ``` python
-begin((def_1) ... (def_n) exp)
+local((def_1) ... (def_n) exp)
 ```
 Note: In the global scope, the keyword `bind` does not require `()` around it, but in local definitions, `()` are required around binding to ensure that they are seperate parameters as `bind(<indentifier> (to|as|=|->) <expressioin>)`.
 
