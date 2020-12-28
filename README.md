@@ -16,25 +16,33 @@ bind str to "Hello World!"
 bind array to list(1 2 3 4 5 6 7 8 9)
 ```
 
-### `λ` Expression
+### The `λ` Expression
 The language implement most syntax and features from Lambda Calculus. A `λ` expression in Lambda Calculus, such as the identity function
 `λx. x` can be defined as 
 ```
 lambda({x} -> x)
 ```
-a lambda expression with mulitple parameters `x` and `y` and a function `f`, in lambda calculus `λxy. f(x y)` can be expressed as
+a `λ` expression with mulitple parameters `x` and `y` and a function `f`, in lambda calculus `λxy. f(x y)` can be expressed as
 ```
 lambda({x y} -> f(x y))
 ```
 #### Examples
+In the language, `[]` and `{}` are interchangable for better readability in `λ` expressions.
 ```
 > (lambda({x} -> x))(5)
 5
-> (lambda({x y} -> +(x y))(1 5)
-6
+> (lambda({x y} -> +(x y)))(2 3)
+5
+> {(lambda({x} -> lambda({y} -> +(x y))))(1)}(4)
+5
 ```
 
-
+### Function Declaration
+In the language, all functions are a `function_identifier` bound to a `λ` expression using the `bind` keyword as follows.
+```
+bind <function_identifier> (as, to, =, ->) lambda({p_1 ... p_n} -> expression);
+```
+The `function_identifier` can contain all alphanumeric characters except keywords. All expressions should be postfixed by a `;` to indicate a seperate line.
 
 
 
