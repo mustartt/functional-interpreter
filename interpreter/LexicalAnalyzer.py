@@ -97,7 +97,8 @@ def parse(program: str) -> List[Any]:
     :retype: List[Any] Abstract Syntax Tree
     """
     
-    return abstract_syntax_tree(tokenize(program))
+    tokens = tokenize(program)
+    return abstract_syntax_tree(tokens)
 
 
 
