@@ -1,0 +1,31 @@
+# map(f lst) maps the function f to every element of lst
+# map: (X -> Y) (listof X) -> (listof Y)
+bind map to lambda({f lst} -> 
+	if(empty?(lst) 
+		list() 
+		cons(f(car(lst)) 
+			map(f cdr(lst)))));
+
+
+
+
+# filter(pred? lst) keeps element for which pred? is true for
+# filter: (X -> Bool) (listof X) -> (listof X)
+bind filter to lambda({pred? lst} -> 
+	if(empty?(lst) 
+		list() 
+		if(pred?(car(lst)) 
+			cons(car(lst) 
+				filter(pred? cdr(lst)))
+			filter(pred? cdr(lst)))));
+
+
+
+
+# reduce(f base lst) reduce lst based on the function f to base
+# reduce: (X Y -> Y) Y (listof X) -> Y
+bind reduce to lambda({f base lst} -> 
+	if(empty?(lst) 
+		base
+		f(car(lst) 
+		 	reduce(f base cdr(lst)))));
