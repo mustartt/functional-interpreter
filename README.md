@@ -64,6 +64,27 @@ and these functions can be called as
 120
 ```
 
+## Logical Operator and Decisions
+Comparison in the language can produce boolean values `True` and `False`, and decisions can be performed based on the result using the `if` function. 
+``` python
+if(condition exp_true exp_false)
+```
+Use `and`, `or`, and `not` to combined logical result.
+
+## Scope and Local Definition
+### Local Definitions
+One can define local definitions and mulitple subsequent routine in functions using the keyword `local` or `begin`. The syntax is
+``` python
+begin((def_1) ... (def_n) exp)
+```
+Note: In the global scope, the keyword `bind` does not require `()` around it, but in local definitions, `()` are required around binding to ensure that they are seperate parameters.
+
+### Language Scope
+The language implements scope, which means that local definitions can share same names as definitions from outer scopes. 
+#### Example
+
+
+
 
 
 
