@@ -3,7 +3,7 @@ import unittest
 from interpreter.LexicalAnalyzer import tokenize
 from interpreter.LexicalAnalyzer import atomize
 from interpreter.LexicalAnalyzer import abstract_syntax_tree
-
+from interpreter.LexicalAnalyzer import parse
 
 class TestLexicalAnalyzer(unittest.TestCase):
 
@@ -110,6 +110,16 @@ class TestLexicalAnalyzer(unittest.TestCase):
                                                'y', ')', ')', ')']),
                          ['bind', 'add', 'to', ['lambda', ['x', 'y'], '->',
                                                 ['+', 'x', 'y']]])
+
+
+    # parse unittest
+    def test_parse(self):
+        self.assertEqual(parse('123'), 123)
+        self.assertEqual(parse('lambda({x} -> x)'), 123)
+        self.assertEqual(parse('{(lambda({x} -> lambda({y} -> +(x y))))(1)}(4)'),
+                         [[['lambda', ['x'], '->', ['lambda', ['y'], '->',
+                                                    ['+', 'x', 'y']]], 1], 4])
+        
 
 
         
