@@ -3,6 +3,11 @@
 The lexical analyzer module for the interpreted language. This module implements
 the parsing for Abstract Syntax Tree
 
+Abstract Syntax Tree
+--------------------
+
+#TODO: Add definitions for Abstract Syntax Tree
+
 This module can be imported as a module and contains the following function:
     * parse       : returns the parsed Abstract Syntax Tree
 
@@ -15,9 +20,7 @@ This module can be imported as a module and contains the following function:
 
 
 import re
-
 from typing import List, Any
-
 
 
 def tokenize(program: str) -> List[str]:
@@ -36,6 +39,11 @@ def tokenize(program: str) -> List[str]:
     # Performatting the program text to remove tabs and returns
     program = re.sub(r'[\n\t]', '', program.replace(';', ''))
 
+    # test for declaration
+    # bind does not require external bracket in language documentation
+    if program.startswith('bind'):
+        program = '(' + program + ')'
+
     # define language seperator
     seperator = ['(', ')', '[', ']', '{', '}']
     for sep in seperator:
@@ -46,6 +54,8 @@ def tokenize(program: str) -> List[str]:
 
     # tokenize program
     return program.split()
+
+
     
 
 
@@ -63,29 +73,115 @@ def atomize(token: str) -> Any:
      :type  token: str
 
      :returns: the parsed Python Datatype
-     :rtype: int, float, and str
+     :rtype:   int, float, and str
     """
 
+    # check if token is integer
     try:
-        # check if token is integer
         return int(token)
     except:
-        try:
-            # check if token is float
-            return float(token)
-        except:
-            try:
-                # TODO: checks for struct
-                return str(token)
-            except:
-                # Somehow unable to parse the datatype
-                raise ValueError('Unable to parse datatype.')
+        pass
+
+    # check if token is float
+    try:
+        return float(token)
+    except:
+        pass
+
+    # TODO: checks for struct
+    # Somehow unable to parse the datatype
+    try:
+        return str(token)
+    except:
+        raise ValueError('Unable to parse datatype.')
         
 
 
+
+
 def abstract_syntax_tree(tokens: List[str]) -> List[Any]:
-    pass
+    """ Parses tokens into a Abstract Syntax Tree
+
+    Parses a list of tokens into a Abstract Syntax Tree. 
+
+    Abstract Syntax Tree Definition
+    --------------------------------
+    An abstract syntax tree is a nested list of Procedures
     
+    [Procedure, Param_1, ..., Param_2]
+
+    The first item of an abstract syntax tree has to be either a
+    procedure or a literal if the length of the AST is 1. The parameters
+    can either be literal, identifier, AST or procedures.
+
+    A procedure is a lambda expression with parameter and expressions
+
+    ['lambda', ['p_1', ..., 'p_n'], exp]
+
+    The procedure takes the n number of parameters outside and after the
+    procedure and applies the positional arguments to their respective
+    location in exp. A procedure can just be an indentifier, and the actual
+    lambda is stored in a higher scope and subsituted in at runtime evaluation.
+    
+    :param tokens: a list of string tokens
+    :type  tokens: list
+
+    :returns: the generated Abstract Syntax Tree
+    :rtype:   List[Any] nested list
+    """
+
+    # define the delimiters for the parser
+    opening = ['(', '{', '[']
+    ending  = [')', '}', ']']
+
+    if len(tokens) == 0:
+        raise SyntaxError('Expected an expression, but found none.')
+
+    # get the first token
+    token = tokens.pop(0)
+
+    # parse Expression
+    if token in opening:
+        # Lambda Expression
+        result = []
+        # parse until closing delimiter is found
+        while not tokens[0] in ending:
+            subtree = abstract_syntax_tree(tokens)
+            result.append(subtree)
+        # parse out the closing delimiter
+        tokens.pop(0)
+
+        # check if lambda function has parameters attached
+        # ex. (lambda({x} -> x))(param)
+        if tokens and tokens[0] in opening:
+            tokens.pop(0) # pop (
+            # parse rest of parameters
+            while not tokens[0] in ending:
+                subtree = abstract_syntax_tree(tokens)
+                result.append(subtree)
+            # pop out the closing delimiter
+            tokens.pop(0)
+
+        # return subtree
+        return result
+    # checks for if tokens is empty
+    elif tokens and tokens[0] in opening:
+        # Function Call
+        result = [token]
+        tokens.pop(0) # pop the opening delimiter
+        while not tokens[0] in ending:
+            subtree = abstract_syntax_tree(tokens)
+            result.append(subtree)
+        # pop out the closing delimiter
+        tokens.pop(0)
+        return result
+    else:
+        # a literal
+        return atomize(token)
+
+
+    
+
 
 def parse(program: str) -> List[Any]:
     """ Parses program text into an Abstract Syntax Tree
