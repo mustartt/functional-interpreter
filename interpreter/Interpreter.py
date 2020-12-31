@@ -3,18 +3,44 @@
 Interpreter implementation. 
 """
 
-class Function(object):
+from typing import List, Dict, Tuple, Any
+
+from Scope import Scope, IdentifierNotFoundInScope, get_global_scope
+
+class AnonymousFunction(object):
     """ Function and Procedure
     TODO: Write the documentation
+
+    Attributes
+    ----------
+    parameters: list
+    body: AbstractSyntaxTree
+    scope: Scope
+
+    interpreter: Interpreter
+    
+    Functions
+    ---------
     """
 
-    def __init__(self, parameters, body, scope):
+    def __init__(self, parameters, body, scope, interpreter):
+        """ Constructor for AnonymousFunction """
         self.parameters = parameters
         self.body = body
         self.scope = scope
+        self.interpreter = interpreter
 
     def __call__(self, *args):
-        pass
+        """ Evaluates AnonymousFunction body
+        TODO: write documentation
+        """
+        call_stack = Scope(self.parameters,
+                           args,
+                           self.scope)
+        # TODO: Maybe increment call_depth in interpreter
+        return self.interpreter.evaluate(self.body, call_stack)
+
+
 
 class Interpreter:
     """ Functional Language Interpreter
@@ -32,6 +58,12 @@ class Interpreter:
     library_loaded: list
         a list of filename stored to ensure that functions are not loaded
         twice in the global scope
+
+    #TODO: to consolidated
+    call_depth: int
+
+    execution_location: Path
+    library_location: Path
     
     Functions
     ---------
@@ -44,10 +76,24 @@ class Interpreter:
     """
 
     def __init__(self):
-        pass
+        """ Interpreter Constructor
+        TODO: Write documentation
+        """
+
+        # setup default parameters
+        self.global_scope = get_global_scope()
+        self.library_loaded = []
+        self.call_depth = 0 # not in a call right now
+
+        # interpreter paths setup
+        # self.execution_location = ?
+
+
 
     def __load_library(self, filename: str) -> str:
         """ Link files together recursively
+
+        TODO: Instead of using string filenames use Path instead
         
         :param filename: the filename to be loaded
         :type  filename: str
@@ -85,7 +131,7 @@ class Interpreter:
     def open_file(self, filename: str) -> List[str]:
         pass
 
-    def evaluate(self, ast, scope=self.global_scope):
+    def evaluate(self, ast, scope=None):
         pass
 
     

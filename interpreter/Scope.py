@@ -31,6 +31,8 @@ class Scope(dict):
         self.update(zip(identifiers, values))
         self.parent = parent
 
+
+
     def lookup(self, identifier: str) -> Any:
         """ Recursivly looks up the indentifer is current Scope and parent Scope
 
