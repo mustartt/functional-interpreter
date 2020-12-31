@@ -1,3 +1,4 @@
+import operator as op
 
 from typing import List, Tuple, Dict, Any
 
@@ -50,4 +51,62 @@ class Scope(dict):
             raise IdentifierNotFoundInScope(f'The indentifier {identifier} cannot be located.')
         else:
             return self.parent.lookup(identifier)
+
+
+def get_global_scope(addon={}) -> Scope:
+    """ Provides the standard functions for the language
+
+    Interpreter can specify additional functions to be added to the global scope
+    from the addon dictionary
+
+    :param addon: Additional standard functions to be added
+    :type  addon: dict
+
+    :returns: the scope with the standard functions
+    :rtype: Scope
+    """
+    
+    scope = Scope()
+    scope.update({
+        '+':op.add, '-':op.sub, '*':op.mul, '/':op.truediv, 
+        '>':op.gt, '<':op.lt, '>=':op.ge, '<=':op.le, '=':op.eq,
+        'local':   lambda *x: x[-1],
+        'car':     lambda x: x[0],
+        'cdr':     lambda x: x[1:],
+        'cons':    lambda x,y: [x] + y,
+        'eq?':     op.is_, 
+        'equal?':  op.eq, 
+        'list':    lambda *x: list(x), 
+        'list?':   lambda x: isinstance(x,list),
+        'empty?':  lambda x: len(x) == 0,
+        'zero?':   lambda x: x == 0,
+    })
+    scope.update(addon)
+    return scope
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
