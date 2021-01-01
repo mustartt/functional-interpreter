@@ -2,10 +2,19 @@
 
 Interpreter implementation. 
 """
-
+import os
+import sys
+from pathlib import PurePath
 from typing import List, Dict, Tuple, Any
 
 from Scope import Scope, IdentifierNotFoundInScope, get_global_scope
+
+class InvalidArgument(Exception):
+    """ InvalidArgument is raised when the number of arguement passed to a
+    AnonymousFunction does not match the number of arguement required by the
+    AnonymousFunction
+    """
+    pass
 
 class AnonymousFunction(object):
     """ Function and Procedure
@@ -58,18 +67,22 @@ class Interpreter:
     library_loaded: list
         a list of filename stored to ensure that functions are not loaded
         twice in the global scope
+    execution_location: PurePath
+        the absolute path where the binaries is being run from
+    binaries_location: str
+        the absolute path where the binaries are located. This is also where
+        the lang/library should be found in
 
+        
     #TODO: to consolidated
     call_depth: int
 
-    execution_location: Path
-    library_location: Path
     
     Functions 
     ---------
     evaluate(ast, scope=global_scope)
 
-    __load_library(filename)
+    _load_library(filename)
         
     open_file(filename)
     
@@ -86,11 +99,10 @@ class Interpreter:
         self.call_depth = 0 # not in a call right now
 
         # interpreter paths setup
-        # self.execution_location = ?
+        self.execution_location = PurePath(os.getcwd())
+        self.binaries_location = PurePath(os.path.dirname(sys.argv[0]))
 
-
-
-    def __load_library(self, filename: str) -> str:
+    def _load_library(self, filename: str) -> str:
         """ Link files together recursively
 
         TODO: Instead of using string filenames use Path instead
@@ -103,13 +115,21 @@ class Interpreter:
         """
 
         # check if it is already loaded
-        if filename in self.loaded:
+        if filename in self.library_loaded:
             return ''
         else:
-            self.loaded.append(filename)
+            self.library_loaded.append(filename)
+
+        # check if filename starts with lang
+        if filename.startswith('lang'):
+            # is a library file -> searches binary location
+            filepath = PurePath(self.binaries_location, filename)
+        else:
+            # not a library file -> searches the cwd dir
+            filepath = PurePath(self.execution_location, filename)
 
         # open file
-        with open(filename, 'rt') as file:
+        with open(filepath, 'rt') as file:
             content = file.read()
 
         start = content.find('load')
@@ -118,7 +138,7 @@ class Interpreter:
         # recursively links language files together
         while start >= 0:
             filename_toload = content[start + len('load ') : end]
-            loaded_content = __load_library(filename_toload)
+            loaded_content = self._load_library(filename_toload)
             
             content = content[:start] + '\n' + loaded_content + '\n' + content[end + 1:]
             
@@ -129,35 +149,63 @@ class Interpreter:
 
         
     def open_file(self, filename: str) -> List[str]:
-        pass
+        """ open_file load the language file at filename and returns a
+        list of statements while parsing out comments
+        """
+        # link the files together
+        content = self._load_library(filename)
+        
+        # remove comments # -> '\n'
+        index = content.find('#')
+        while index >= 0:
+            end = content.find('\n', index + 1)
+            content = content[:index] + content[end+1:]
+            index = content.find('#')
 
-    def evaluate(self, x, scope=None):
+        content = re.sub(r'(\t|\s+)', ' ', content)
+        return [s.strip() for s in content.split(';') if s.strip() != '']
+
+
+    def evaluate(self, at, scope=None):
         # check if it is currently in global scope
         if not scope:
-            scope = self.global_scope()
+            scope = self.global_scope
+
+        def check_args(at, n_args: int) -> None:
+            if len(at) - 1 != n_args:
+                raise InvalidArgument('Invalid number of positional arguments found. '
+                                      + f'Expected {len(at) - 1}. Found {n_args}.')
 
         # evaluation decision tree
-        if isinstance(x, str):
+        if isinstance(at, str):
             return scope.lookup(x)
         elif not isinstance(x, list):
-            return x
-        elif x[0] == 'quote':
-            (_, exp) = x
+            return at
+        elif at[0] == 'quote':
+            check_args(at, 1)
+            (_, exp) = at
             return exp
-        elif x[0] == 'if':
-            (_, test, conseq, alt) = x
-            #print(f'test: {test}? {conseq} : {alt}')
+        elif at[0] == 'display':
+            check_args(at, 1)
+            (_, exp) = at
+            # write to stdout
+            return exp
+        elif at[0] == 'if':
+            check_args(at, 3)
+            (_, test, conseq, alt) = at
             exp = (conseq if self.evaluate(test, scope) else alt)
             return self.evaluate(exp, scope)
-        elif x[0] == 'bind':
-            (_, var, _, exp) = x
+        elif at[0] == 'bind':
+            check_args(at, 3)
+            (_, var, _, exp) = at
             scope[var] = self.evaluate(exp, scope)
-        elif x[0] == 'lambda':
-            (_, parms, _, exp) = x
+        elif at[0] == 'lambda':
+            check_args(at, 3)
+            (_, parms, _, exp) = at
             return AnonymousFunction(parms, exp, scope, self)
         else:
-            proc = self.evaluate(x[0], scope)
-            args = [self.evaluate(exp, scope) for exp in x[1:]]
+            proc = self.evaluate(at[0], scope)
+            args = [self.evaluate(exp, scope) for exp in at[1:]]
             return proc(*args)
 
     
