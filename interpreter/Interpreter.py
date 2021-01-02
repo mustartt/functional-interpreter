@@ -2,6 +2,7 @@
 
 Interpreter implementation. 
 """
+import re
 import os
 import sys
 from pathlib import PurePath

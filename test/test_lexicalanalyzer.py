@@ -115,7 +115,7 @@ class TestLexicalAnalyzer(unittest.TestCase):
     # parse unittest
     def test_parse(self):
         self.assertEqual(parse('123'), 123)
-        self.assertEqual(parse('lambda({x} -> x)'), 123)
+        self.assertEqual(parse('lambda({x} -> x)'), ['lambda', ['x'], '->', 'x'])
         self.assertEqual(parse('{(lambda({x} -> lambda({y} -> +(x y))))(1)}(4)'),
                          [[['lambda', ['x'], '->', ['lambda', ['y'], '->',
                                                     ['+', 'x', 'y']]], 1], 4])
