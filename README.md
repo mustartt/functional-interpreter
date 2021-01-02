@@ -10,6 +10,13 @@ $ interp_lin_v0_1 <filename.lang>
 ```
 Note: Windows Binaries may not work with Windows Defender
 
+## How to build
+The project can be built with `pyinstaller` into a binary executable with the following  commands
+```
+make build
+```
+the built binaries is found in the folder `./interpreter/dist/main/`.
+
 ## Variables Declaration
 A basic variable declaration is as follows
 ```
