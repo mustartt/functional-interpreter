@@ -23,10 +23,12 @@ def evaluate_statement(interpreter, statement):
     try:
         value = interpreter.evaluate(parse(statement))
     except Exception as err:
-        print(err)
+        sys.stderr.write(str(err) + '\n')
+        sys.stderr.flush()
 
     if value is not None:
-        print(to_string(value))
+        sys.stdout.write(to_string(value) + '\n')
+        sys.stdout.flush()
 
 # DEBUG
 #interp = Interpreter()
@@ -53,15 +55,24 @@ def main():
                     
     else:
         # starts the repl
-        prompt = '> '
-        print('Welcome to <Lang> Interpreter [Version 0.1].')
+        prompt = 'λ '
+        sys.stdout.write('Welcome to <Lang> Interpreter [Version 0.1].\n')
+        sys.stdout.flush()
 
         # begin rep loop
         while True:
-            input_str = input(prompt)
+            sys.stdout.write(prompt)
+            sys.stdout.flush()
+            input_str = sys.stdin.readline()
 
-            if input_str == 'quit()':
+            # stops the repl
+            if input_str.startswith('quit()'):
                 break
+
+            # resets the intepreter memory
+            if input_str.startswith('reset()'):
+                interp.reset()
+                continue
 
             # check for file loading
             if input_str.startswith('open'):

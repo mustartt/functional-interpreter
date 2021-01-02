@@ -14,6 +14,8 @@ class InvalidArgument(Exception):
     """
     pass
 
+
+
 class AnonymousFunction(object):
     """ Lambda Function 
     
@@ -45,7 +47,9 @@ class AnonymousFunction(object):
         self.scope = scope
         self.interpreter = interpreter
 
-    def call(self, *args):
+
+
+    def __call__(self, *args):
         """ Evaluates AnonymousFunction body
         
         :param args: list of parameters
@@ -114,11 +118,13 @@ class Interpreter:
         self.binaries_location = PurePath(sys.argv[0]).parent
 
 
+
     def reset() -> None:
         """ Resets the Interpreter to the original state """
         self.global_scope = get_global_scope()
         self.library_loaded = []
         self.call_depth = 0 # not in a call right now
+
 
 
     def _load_library(self, filename: str) -> str:
@@ -216,31 +222,32 @@ class Interpreter:
             return scope.lookup(at)
         elif not isinstance(at, list):
             return at
-        elif at[0] == 'quote':
-            check_args(at, 1)
-            (_, exp) = at
-            return exp
         elif at[0] == 'display':
             check_args(at, 1)
             (_, exp) = at
-            # TODO: write to stdout
+            # write to stdout
+            sys.stdout.write(exp)
+            sys.stdout.flush()
             return exp
         elif at[0] == 'if':
             check_args(at, 3)
-            (_, test, conseq, alt) = at
-            exp = (conseq if self.evaluate(test, scope) else alt)
+            (_, cond, true_exp, false_exp) = at
+            exp = true_exp if self.evaluate(cond, scope) else false_exp
             return self.evaluate(exp, scope)
         elif at[0] == 'bind':
             check_args(at, 3)
             (_, var, _, exp) = at
+            # check for re-definition
+            if var in scope:
+                raise InvalidArgument(f'{var} is already defined in the stack.')
             scope[var] = self.evaluate(exp, scope)
-        elif at[0] == 'lambda':
+        elif at[0] == 'lambda' or at[0] == 'λ':
             check_args(at, 3)
-            (_, parms, _, exp) = at
-            return AnonymousFunction(parms, exp, scope, self)
+            (_, params, _, exp) = at
+            return AnonymousFunction(params, exp, scope, self)
         else:
-            proc = self.evaluate(at[0], scope)
+            func = self.evaluate(at[0], scope)
             args = [self.evaluate(exp, scope) for exp in at[1:]]
-            return proc.call(*args)
+            return func(*args)
 
 

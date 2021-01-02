@@ -72,6 +72,8 @@ def get_global_scope(addon={}) -> Scope:
     scope.update({
         '+':op.add, '-':op.sub, '*':op.mul, '/':op.truediv, 
         '>':op.gt, '<':op.lt, '>=':op.ge, '<=':op.le, '=':op.eq,
+        'true':    True,
+        'false':   False,
         'local':   lambda *x: x[-1],
         'car':     lambda x: x[0],
         'cdr':     lambda x: x[1:],
@@ -82,6 +84,18 @@ def get_global_scope(addon={}) -> Scope:
         'list?':   lambda x: isinstance(x,list),
         'empty?':  lambda x: len(x) == 0,
         'zero?':   lambda x: x == 0,
+        'abs':     abs,
+        'append':  op.add,
+        'max':     max,
+        'min':     min,
+        'not':     op.not_,
+        'and':     op.and_,
+        'or':      op.or_,
+        '&':       op.and_,
+        '|':       op.or_,
+        '%':       op.mod,
+        'in?':     op.contains,
+        'list-get': lambda x,y: x[y] 
     })
     scope.update(addon)
     return scope
