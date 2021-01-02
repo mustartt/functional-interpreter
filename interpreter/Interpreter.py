@@ -67,9 +67,7 @@ class Interpreter:
     library_loaded: list
         a list of filename stored to ensure that functions are not loaded
         twice in the global scope
-    execution_location: PurePath
-        the absolute path where the binaries is being run from
-    binaries_location: str
+    binaries_location: PurePath
         the absolute path where the binaries are located. This is also where
         the lang/library should be found in
 
@@ -85,6 +83,8 @@ class Interpreter:
     _load_library(filename)
         
     open_file(filename)
+
+    reset()
     
     """
 
@@ -99,8 +99,15 @@ class Interpreter:
         self.call_depth = 0 # not in a call right now
 
         # interpreter paths setup
-        self.execution_location = PurePath(os.getcwd())
-        self.binaries_location = PurePath(os.path.dirname(sys.argv[0]))
+        self.binaries_location = PurePath(sys.argv[0]).parent
+
+
+    def reset() -> None:
+        """ Resets the Interpreter to the original state """
+        self.global_scope = get_global_scope()
+        self.library_loaded = []
+        self.call_depth = 0 # not in a call right now
+
 
     def _load_library(self, filename: str) -> str:
         """ Link files together recursively
@@ -120,17 +127,18 @@ class Interpreter:
         else:
             self.library_loaded.append(filename)
 
-        # check if filename starts with lang
-        if filename.startswith('lang'):
-            # is a library file -> searches binary location
-            filepath = PurePath(self.binaries_location, filename)
-        else:
-            # not a library file -> searches the cwd dir
-            filepath = PurePath(self.execution_location, filename)
 
-        # open file
-        with open(filepath, 'rt') as file:
-            content = file.read()
+        # try opening file at current location, otherwise try to find at library
+        try: 
+            with open(filename, 'rt') as file:
+                content = file.read()
+        except FileNotFoundError:
+            # file is not found under local
+            try: 
+                with open(self.binaries_location / filename) as file:
+                    content = file.read()
+            except Exception as err:
+                raise FileNotFoundError(f'{filename} is not found in cwd or library')
 
         start = content.find('load')
         end   = content.find(';', start)
@@ -140,12 +148,14 @@ class Interpreter:
             filename_toload = content[start + len('load ') : end]
             loaded_content = self._load_library(filename_toload)
             
+            # rejoin content
             content = content[:start] + '\n' + loaded_content + '\n' + content[end + 1:]
             
             start = content.find('load')
             end   = content.find(';', start)
 
         return content
+
 
         
     def open_file(self, filename: str) -> List[str]:
@@ -166,7 +176,22 @@ class Interpreter:
         return [s.strip() for s in content.split(';') if s.strip() != '']
 
 
-    def evaluate(self, at, scope=None):
+
+    def evaluate(self, at, scope=None) -> Any:
+        """ Evalues the Action Tree 
+        
+        evaluate takes a Action Tree and a scope and returns the result of the
+        evaluation. 
+
+        :param at: the action tree to be evaluated
+        :type  at: nested list
+        :param scope: the current scope of the call stack
+        :type  scope: dict
+
+        :returns: the evaulated result
+        :rtype: Any
+        """
+
         # check if it is currently in global scope
         if not scope:
             scope = self.global_scope
@@ -178,8 +203,8 @@ class Interpreter:
 
         # evaluation decision tree
         if isinstance(at, str):
-            return scope.lookup(x)
-        elif not isinstance(x, list):
+            return scope.lookup(at)
+        elif not isinstance(at, list):
             return at
         elif at[0] == 'quote':
             check_args(at, 1)
@@ -188,7 +213,7 @@ class Interpreter:
         elif at[0] == 'display':
             check_args(at, 1)
             (_, exp) = at
-            # write to stdout
+            # TODO: write to stdout
             return exp
         elif at[0] == 'if':
             check_args(at, 3)
@@ -207,32 +232,5 @@ class Interpreter:
             proc = self.evaluate(at[0], scope)
             args = [self.evaluate(exp, scope) for exp in at[1:]]
             return proc(*args)
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

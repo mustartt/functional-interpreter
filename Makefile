@@ -1,6 +1,5 @@
-interp: interp.py
-	pyinstaller --onefile interpreter/interp.py
-	mv interpreter/build/interp.exe ./
+interp: main
+	pyinstaller --onedir --add-data "lang/*.lang;lang" interpreter/main.py
 
 test:
 	python -m unittest
