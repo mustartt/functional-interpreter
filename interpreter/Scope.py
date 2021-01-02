@@ -1,4 +1,5 @@
 import operator as op
+import math
 
 from typing import List, Tuple, Dict, Any
 
@@ -95,7 +96,10 @@ def get_global_scope(addon={}) -> Scope:
         '|':       op.or_,
         '%':       op.mod,
         'in?':     op.contains,
-        'list-get': lambda x,y: x[y] 
+        'list-get': lambda x,y: x[y],
+        'sqrt':    math.sqrt,
+        'sqr':     lambda x: x**2,
+        'pow':     lambda x,y: x ** y,
     })
     scope.update(addon)
     return scope

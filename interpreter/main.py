@@ -56,7 +56,7 @@ def main():
     else:
         # starts the repl
         prompt = 'λ '
-        sys.stdout.write('Welcome to <Lang> Interpreter [Version 0.1].\n')
+        sys.stdout.write('Welcome to The λ Interpreter [Version 0.1].\n')
         sys.stdout.flush()
 
         # begin rep loop
