@@ -1,7 +1,4 @@
-""" Functional Language Interpreter
-
-Interpreter implementation. 
-"""
+""" Functional Language Interpreter """
 import re
 import os
 import sys
@@ -18,19 +15,27 @@ class InvalidArgument(Exception):
     pass
 
 class AnonymousFunction(object):
-    """ Function and Procedure
-    TODO: Write the documentation
+    """ Lambda Function 
+    
+    An AnonymousFunction that evaluates the positional parameter
+    with the body definition. 
 
     Attributes
     ----------
     parameters: list
+        a list of parameter that is required for evaluation of body
     body: AbstractSyntaxTree
+        the AbstractSyntaxTree to be evaluated with positional arguments
     scope: Scope
-
+        the call stack with local variables
     interpreter: Interpreter
+        the interpreter
     
     Functions
     ---------
+    call() -> Any
+        Evaluates the positional arguement parameters in the body expression
+        and returns the result
     """
 
     def __init__(self, parameters, body, scope, interpreter):
@@ -40,9 +45,14 @@ class AnonymousFunction(object):
         self.scope = scope
         self.interpreter = interpreter
 
-    def __call__(self, *args):
+    def call(self, *args):
         """ Evaluates AnonymousFunction body
-        TODO: write documentation
+        
+        :param args: list of parameters
+        :type  args: list
+
+        :returns: returns the expression as a result of evaluation
+        :rtype: Any
         """
         call_stack = Scope(self.parameters,
                            args,
@@ -71,29 +81,30 @@ class Interpreter:
     binaries_location: PurePath
         the absolute path where the binaries are located. This is also where
         the lang/library should be found in
-
-        
-    #TODO: to consolidated
     call_depth: int
-
+        stops the interpreter if call_depth is exceeded at 2000 and throws StackOverflow
     
     Functions 
     ---------
-    evaluate(ast, scope=global_scope)
-
-    _load_library(filename)
-        
-    open_file(filename)
-
-    reset()
-    
+    evaluate(at, scope=global_scope) -> Any
+        evaluates the AT with the global_scope
+    _load_library(filename) -> str
+        recursively links lanugage files
+    open_file(filename) -> List[str]
+        opens the file at filename at either the library location or the current cwd
+    reset() -> None
+        resets the library_loaded and interpreter memory
     """
 
     def __init__(self):
         """ Interpreter Constructor
-        TODO: Write documentation
+        
+        Sets up the internal states of the interpreter,
+        initializes to global_scope with basic built-in functions
+        initializes library_loaded to prevent reload libraries
+        initializes call_depth to detect StackOverflow
+        initializes the path to the library included in the binary
         """
-
         # setup default parameters
         self.global_scope = get_global_scope()
         self.library_loaded = []
@@ -113,8 +124,6 @@ class Interpreter:
     def _load_library(self, filename: str) -> str:
         """ Link files together recursively
 
-        TODO: Instead of using string filenames use Path instead
-        
         :param filename: the filename to be loaded
         :type  filename: str
 
@@ -232,6 +241,6 @@ class Interpreter:
         else:
             proc = self.evaluate(at[0], scope)
             args = [self.evaluate(exp, scope) for exp in at[1:]]
-            return proc(*args)
+            return proc.call(*args)
 
 
