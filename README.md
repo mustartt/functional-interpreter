@@ -1,6 +1,8 @@
 # functional-interpreter
 A Functional Programming Language Interpreter written in Python. The fundamental idea of this language is to express the functional nature of the language, as every function is a `λ` expression bound to an identifier. The language is non-typed and borrow many features of the Scheme Language, such as `list`, `cons`, `car`, `cdr`, and `struct`. Source code can be found under [https://github.com/mustartt/func-interp-source](https://github.com/mustartt/func-interp-source)
 
+![](https://i.imgur.com/6GDq23w.png)
+
 Download the interpreter to play around with the language on Windows and Linux, or
 use the online limited interactive mode at [https://mustartt.github.io/interpreter-demo/](https://mustartt.github.io/interpreter-demo/).
 
