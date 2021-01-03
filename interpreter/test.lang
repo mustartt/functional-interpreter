@@ -1,0 +1,3 @@
+load lang/higher-order.lang;
+
+map(sqr list(1 2 3 4 5));
