@@ -81,7 +81,7 @@ def main():
 
             else:
                 evaluate_statement(interp, input_str)
-                
+
 # start the main process
 main()
 
