@@ -87,7 +87,9 @@ def main():
             else:
                 evaluate_statement(interp, input_str)
                 
-        
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 # start the main process
 main()
 
