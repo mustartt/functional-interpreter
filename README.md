@@ -12,6 +12,27 @@ $ interp_lin_v0_1 <filename.lang>
 ```
 Note: Windows Binaries may not work with Windows Defender
 
+# Tables of Content
+- [Tables of Content](#tables-of-content)
+  * [How to build](#how-to-build)
+  * [Variables Declaration](#variables-declaration)
+      - [Examples](#examples)
+  * [The `λ` Expression](#the-----expression)
+      - [Examples](#examples-1)
+  * [Function Declaration](#function-declaration)
+      - [Examples](#examples-2)
+  * [Logical Operator and Decisions](#logical-operator-and-decisions)
+  * [Scope and Local Definition](#scope-and-local-definition)
+    + [Local Definitions](#local-definitions)
+    + [Language Scope](#language-scope)
+      - [Example](#example)
+  * [Lists](#lists)
+  * [Strings](#strings)
+  * [Structs](#structs)
+  * [Standard Library](#standard-library)
+      - [higher-order.lang](#higher-orderlang)
+      - [collections.lang](#collectionslang)
+
 ## How to build
 The project can be built with `pyinstaller` into a binary executable with the following  commands
 ```
