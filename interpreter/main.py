@@ -23,12 +23,10 @@ def evaluate_statement(interpreter, statement):
     try:
         value = interpreter.evaluate(parse(statement))
     except Exception as err:
-        sys.stderr.write(str(err) + '\n')
-        sys.stderr.flush()
+        print(str(err))
 
     if value is not None:
-        sys.stdout.write(to_string(value) + '\n')
-        sys.stdout.flush()
+          print(to_string(value))
 
 # DEBUG
 #interp = Interpreter()
@@ -57,14 +55,11 @@ def main():
     else:
         # starts the repl
         prompt = 'λ '
-        sys.stdout.write('Welcome to The λ Interpreter [Version 0.1].\n')
-        sys.stdout.flush()
+        print('Welcome to The λ Interpreter [Version 0.1]')
 
         # begin rep loop
         while True:
-            sys.stdout.write(prompt)
-            sys.stdout.flush()
-            input_str = sys.stdin.readline()
+            input_str = input(prompt)
 
             # stops the repl
             if input_str.startswith('quit()'):
