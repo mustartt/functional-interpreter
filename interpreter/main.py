@@ -47,7 +47,8 @@ def main():
         # opens all the files from arguments
         program_list = []
         for file in args:
-            program_list.append(interp.open_file(file))
+            # joins program list together instead of appending
+            program_list += interp.open_file(file)
 
         # evaluates each expression in program list
         for statement in program_list:

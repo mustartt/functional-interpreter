@@ -15,8 +15,11 @@ clean-win:
 run:
 	python interpreter/main.py
 
-build:
+build-win:
 	cd interpreter && pyinstaller --onedir --add-data "lang/*.lang;lang" main.py 
+
+build:
+	cd interpreter && pyinstaller --onedir --add-data "lang/*.lang:lang" main.py 
 
 test: 
 	python -m unittest
