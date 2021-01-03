@@ -29,3 +29,16 @@ bind reduce to lambda({f base lst} ->
 		base
 		f(car(lst) 
 		 	reduce(f base cdr(lst)))));
+
+
+
+
+# build-list(s) build a list index from 0 to s
+# build-list: Nat -> (listof Nat)
+bind build-list to lambda({s} -> 
+	local(
+		bind(bl -> lambda({s lst} -> 
+			if(zero?(s)
+				lst
+				bl(-(s 1) cons(s lst)))))
+		bl(s list())));
