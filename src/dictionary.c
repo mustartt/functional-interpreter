@@ -6,12 +6,9 @@
 #include "dynamic.h"
 #include "dictionary.h"
 
+#define HASHSIZE 101
 
-/*
- * Function: hash
- * --------------
- * form has value for string s
- */
+/* hashing function */
 unsigned hash(char* s) {
 	unsigned hashval;
 	for (hashval = 0; *s != '\0'; s++)
@@ -26,16 +23,29 @@ unsigned hash(char* s) {
 
 /* Creates the hasttab itself */
 struct entry_t** create_hashtab() {
-	struct entry_t* hashtab = (struct entry_t*) calloc(HASHSIZE, sizeof(struct entry_t*));
-	return hashtab;
+	return (struct entry_t**) calloc(HASHSIZE, sizeof(struct entry_t*));
 }
 
 
 /* Look up s in hashtab */
-struct entry_t* hashtab_lookup(struct entry_t** hashtab, char* s) {
-	// entry head
+/* NOTE: Make sure to duplicate before using */
+struct DynamicVar* hashtab_lookup(struct entry_t** hashtab, char* s) {
 	struct entry_t* head;
-	for (head = hashtab[hash(s)]; head != NULL; head = head->next)
+	unsigned hashval = hash(s);
+	for (head = hashtab[hashval]; head != NULL; head = head->next)
+		if (strcmp(s, head->key) == 0)
+			return head->expression;
+	// if not found
+	return NULL;
+}
+
+
+/* Look up s in hashtab */
+/* NOTE: Make sure to duplicate before using */
+struct entry_t* lookup(struct entry_t** hashtab, char* s) {
+	struct entry_t* head;
+	unsigned hashval = hash(s);
+	for (head = hashtab[hashval]; head != NULL; head = head->next)
 		if (strcmp(s, head->key) == 0)
 			return head;
 	// if not found
@@ -44,44 +54,50 @@ struct entry_t* hashtab_lookup(struct entry_t** hashtab, char* s) {
 
 
 
+
 /* 
  * put key and value in hastab 
  * NOTE: rememeber to free the DynamicVar, its not freed in here
  */
 struct entry_t* hashtab_install(struct entry_t** hashtab, char* key, struct DynamicVar* value) {
-	struct entry_t* head;
+	
+	// DEBUG: printf("Installing key=%s val=%p\n", key, value);
+	
+	struct entry_t* head = lookup(hashtab, key);
 	unsigned hashval;
 
 	/* Not Found */
-	if ((head = hashtab_lookup(hashtab, key)) == NULL) {
-		head = (struct entry_t*)malloc(sizeof(struct entry_t));
+	if (head == NULL) {
+		head = (struct entry_t*) malloc(sizeof(struct entry_t));
+		
 		if (head == NULL || (head->key = strdup(key)) == NULL)
 			return NULL;
+		
 		hashval = hash(key);
 		head->next = hashtab[hashval];
 		hashtab[hashval] = head;
 	} else {
 		// free previous definion when its a DynamicList
 		free_var(head->expression);
-
-		// duplicate DynamicVar
-		head->expression = vardup(value);
 	}
 
-	// build-in operations dont have expressions
-	if (value != NULL) {
-		// duplicate DynamicVar
-		head->expression = vardup(value);
-	}
+	// duplicate DynamicVar
+	if ((head->expression = vardup(value)) == NULL)
+		return NULL;
+
+	// DEBUG: printf("The new pointer is val=%p\n", head->expression);
 
 	return head;
 }
 
 /* Free Hashtable */
-void hashtable_free(struct entry_t** hashtab) {
+void free_hashtable(struct entry_t** hashtab) {
 	int i;
 	for (i = 0; i < HASHSIZE; i++) {
 		if (hashtab[i] != NULL) {
+
+			//DEBUG: printf("Freeing %p\n", hashtab[i]);
+
 			struct entry_t* head = hashtab[i];
 			struct entry_t* temp; 
 
@@ -96,5 +112,21 @@ void hashtable_free(struct entry_t** hashtab) {
 			}
 		}
 	}
+
+	free(hashtab);
 }
 
+/* Prints the debug information */
+void debug_hashtab(struct entry_t** hashtab) {
+	printf("=================================\n");
+	for (int i = 0; i < HASHSIZE; i++) {
+		if (hashtab[i] != NULL) {
+			printf("hash=%d key=\"%s\" exp=%p next=%p\n",
+				i,
+				hashtab[i]->key,
+				hashtab[i]->expression,
+				hashtab[i]->next);
+		}
+	}
+	printf("=================================\n");
+}
