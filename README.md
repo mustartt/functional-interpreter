@@ -11,6 +11,7 @@ use the online limited interactive mode at [https://mustartt.github.io/interpret
 $ interp_lin_v0_1 <filename.lang>
 ```
 Note: Windows Binaries may not work with Windows Defender
+https://github.com/mustartt/functional-interpreter/releases
 
 # Tables of Content
 - [Tables of Content](#tables-of-content)
