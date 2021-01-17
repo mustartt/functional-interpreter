@@ -1,5 +1,5 @@
 # functional-interpreter
-A Functional Programming Language Interpreter written in Python. The fundamental idea of this language is to express the functional nature of the language, as every function is a `λ` expression bound to an identifier. The language is weakly-typed and borrow many features of the Scheme Language.
+A Functional Programming Language Interpreter written in Python and C. The fundamental idea of this language is to express the functional nature of the language, as every function is a `λ` expression bound to an identifier. The language is weakly-typed and borrow many features of the Scheme Language.
 
 ![](https://i.imgur.com/vKfUfCz.png)
 
